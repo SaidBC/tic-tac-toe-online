@@ -1,0 +1,171 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@font-face {
+  font-family: rubik;
+  src: url("./assets/fonts/Rubik/Rubik-VariableFont_wght.ttf") format(TrueType);
+}
+@layer {
+  body {
+    @apply bg-darkblue-800 font-rubik;
+  }
+}
+
+@layer components {
+  .container-shadow {
+    box-shadow: 0 0.5rem theme(colors.darkblue-900);
+  }
+  .x-radio-wrapper {
+    &::before,
+    &::after {
+      @apply content-[""] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10  w-10 h-2.5 rounded-[3px] bg-gray-clr;
+    }
+    &::before {
+      @apply rotate-45;
+    }
+    &::after {
+      @apply -rotate-45;
+    }
+    &:has(input:checked)::before,
+    &:has(input:checked)::after {
+      @apply bg-darkblue-800;
+    }
+  }
+  .o-radio-wrapper {
+    &::before {
+      @apply content-[""] absolute w-[35px] h-[35px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 rounded-full border-[10px] border-solid border-gray-clr;
+    }
+    &:has(input:checked)::before {
+      @apply border-darkblue-800;
+    }
+  }
+  .o-radio-wrapper,
+  .x-radio-wrapper {
+    @apply relative rounded-[0.75rem] isolate;
+    &:has(input:checked) {
+      @apply bg-gray-clr;
+    }
+    & > input {
+      @apply w-full h-full rounded-[0.625rem] appearance-none cursor-pointer;
+    }
+  }
+  .new-game-btn {
+    @apply h-14 rounded-[0.875rem] font-rubik text-lg font-semibold text-darkblue-800 shadow-container flex items-center justify-center;
+    &:active {
+      @apply shadow-none relative top-2;
+    }
+  }
+
+  .turn-x {
+    @apply translate-y-[-3px];
+    &::before,
+    &::after {
+      @apply content-[""] absolute w-[25px] h-1.5 rounded-sm bg-current rotate-45;
+    }
+    &::after {
+      @apply -rotate-45;
+    }
+  }
+  .turn-o {
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 22px;
+      height: 22px;
+      transform: translateY(-50%);
+      border: 6px solid currentColor;
+      border-radius: 25px;
+    }
+  }
+  /* X BLOCK STYLES */
+  .x-block::before,
+  .x-block::after {
+    position: absolute;
+    content: "";
+    width: 50px;
+    height: 12px;
+    border-radius: 3px;
+    background-color: theme(colors.skyblue-clr);
+    transform: rotate(45deg) scaleX(0);
+    transform-origin: left;
+    top: calc(50% - 20px);
+    left: calc(50% - 18px);
+    animation: x-animation-second-line 0.5s ease-in forwards;
+  }
+
+  .x-block::after {
+    content: "";
+    top: calc(50% + 15px);
+    transform: rotate(-45deg) scaleX(0);
+    animation: x-animation-first-line 0.5s ease-in forwards;
+    animation-delay: 0.5s;
+  }
+
+  @keyframes x-animation-first-line {
+    to {
+      transform: rotate(-45deg) scaleX(1);
+    }
+  }
+
+  @keyframes x-animation-second-line {
+    to {
+      transform: rotate(45deg) scaleX(1);
+    }
+  }
+
+  /* O BLOCK STYLES */
+
+  @property --o-angle {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+  }
+
+  .o-block::before {
+    position: absolute;
+    content: "";
+    width: 45px;
+    height: 45px;
+    background-image: conic-gradient(
+      theme(colors.yellow-clr) 0 var(--o-angle),
+      theme(colors.darkblue-700) var(--o-angle) 360deg
+    );
+    border-radius: 100vw;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: o-animation 1s ease-in forwards;
+  }
+
+  .o-block::after {
+    position: absolute;
+    content: "";
+    width: 21px;
+    height: 21px;
+    background-color: theme(colors.darkblue-700);
+    border-radius: 100vw;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  @keyframes o-animation {
+    to {
+      --o-angle: 360deg;
+    }
+  }
+  .btn-sm {
+    @apply text-xl font-rubik font-medium text-darkblue-700 p-3 rounded-lg shadow-container-sm;
+    &:active {
+      @apply relative top-1 shadow-none;
+    }
+  }
+  .popup-wrapper {
+    @apply absolute top-0 left-0 w-full h-[100dvh] bg-black/40;
+  }
+  .popup-container {
+    @apply absolute flex flex-col items-center w-[calc(100%_+_1.25rem)] top-1/2 -left-5 -translate-y-1/2 py-12 bg-darkblue-700 gap-6;
+  }
+}
