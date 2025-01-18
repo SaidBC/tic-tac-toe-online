@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
-import AlertPopup from "./components/utils/AlertPopup";
+import AlertPopup from "./components/AlertPopup";
 
 function App() {
   const alertRef = useRef();

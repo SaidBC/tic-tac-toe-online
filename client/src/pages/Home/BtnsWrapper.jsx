@@ -1,6 +1,4 @@
-import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import AlertPopup from "../utils/AlertPopup";
 
 function BtnsWrapper() {
   return (

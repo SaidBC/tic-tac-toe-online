@@ -1,4 +1,4 @@
-import XOLogo from "../utils/XOLogo";
+import XOLogo from "../../components/XOLogo";
 import TimerWrapper from "./TimerWrapper";
 
 function HeaderSection({ turn, setIsResigning, initialTimer }) {

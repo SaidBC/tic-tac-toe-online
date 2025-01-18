@@ -1,21 +1,13 @@
-import OIcon from "../utils/OIcon";
-import XIcon from "../utils/XIcon";
-import XOLogo from "../utils/XOLogo";
-import { Link } from "react-router-dom";
-function GameOverPopup({ winner, setBoard, setIsGameover, turn }) {
+import { memo } from "react";
+import OIcon from "../OIcon";
+import XIcon from "../XIcon";
+import XOLogo from "../XOLogo";
+
+function GameOverPopup({ winner, nextRoundHandle, quitHandle }) {
   const winnerStyle = {
     x: "text-skyblue-clr",
     o: "text-yellow-clr",
     tie: "text-gray-clr",
-  };
-  const nextRoundHandle = function () {
-    setBoard([
-      [0, 0, 0],
-      [0, 0, 0],
-      [0, 0, 0],
-    ]);
-    turn.current = "x";
-    setIsGameover(false);
   };
   return (
     <div className="popup-wrapper">
@@ -35,12 +27,12 @@ function GameOverPopup({ winner, setBoard, setIsGameover, turn }) {
           </span>
         </div>
         <div className="grid grid-cols-[auto_auto] gap-4">
-          <Link
-            to="/play"
+          <button
+            onClick={quitHandle}
             className="btn-sm shadow-gray-shadow-clr bg-gray-clr"
           >
             QUIT
-          </Link>
+          </button>
           <button
             onClick={nextRoundHandle}
             className="btn-sm shadow-yellow-shadow-clr bg-yellow-clr"
@@ -52,4 +44,4 @@ function GameOverPopup({ winner, setBoard, setIsGameover, turn }) {
     </div>
   );
 }
-export default GameOverPopup;
+export default memo(GameOverPopup);

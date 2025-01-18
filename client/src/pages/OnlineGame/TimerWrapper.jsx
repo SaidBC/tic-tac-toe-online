@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Timer from "./Timer";
 import { socket } from "../../socket";
-import secondsToMinutes from "../utils/secondsToMinutes";
+import secondsToMinutes from "../../utils/secondsToMinutes";
 
 function TimerWrapper({ turn, initialTimer }) {
   const [time, setTime] = useState({

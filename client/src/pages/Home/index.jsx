@@ -1,6 +1,6 @@
 import BtnsWrapper from "./BtnsWrapper";
 import PickPlayer from "./PickPlayer";
-import XOLogo from "../utils/XOLogo";
+import XOLogo from "../../components/XOLogo";
 
 function Home() {
   return (

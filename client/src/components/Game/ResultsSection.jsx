@@ -1,8 +1,7 @@
 import { memo } from "react";
 import { useOutletContext } from "react-router-dom";
 
-function ResultsSection({ gameResults, mode }) {
-  const { currentPlayer } = useOutletContext();
+function ResultsSection({ currentPlayer, gameResults, mode }) {
   return (
     <div className="grid  grid-cols-3 justify-items-center p-6 gap-5 [&>*]:flex [&>*]:flex-col [&>*]:justify-center [&>*]:items-center [&>*]:rounded-2xl [&>*]:text-darkblue-800 [&>*]:w-full [&>*]:h-20 [&>*]:font-medium">
       <div className="bg-skyblue-clr">

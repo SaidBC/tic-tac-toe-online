@@ -1,10 +1,11 @@
 import { Navigate } from "react-router-dom";
 import App from "../App";
-import Home from "../components/Home";
+import Home from "../pages/Home";
 import Game from "../components/Game";
-import OnlineGame from "../components/OnlineGame";
-import Loading from "../components/OnlineGame/Loading";
-import OnlineGameBoard from "../components/OnlineGame/OnlineGameBoard";
+import OnlineGame from "../pages/OnlineGame";
+import Loading from "../pages/OnlineGame/Loading";
+import OnlineGameBoard from "../pages/OnlineGame/OnlineGameBoard";
+import OfflineGame from "../pages/OfflineGame";
 
 const routes = [
   {
@@ -21,7 +22,7 @@ const routes = [
       },
       {
         path: "offline",
-        element: <Game mode="offline" />,
+        element: <OfflineGame />,
       },
       {
         path: "computer",

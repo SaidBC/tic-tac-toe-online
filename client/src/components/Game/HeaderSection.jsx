@@ -1,5 +1,5 @@
 import { useEffect, useReducer } from "react";
-import XOLogo from "../utils/XOLogo";
+import XOLogo from "../../components/XOLogo";
 
 function HeaderSection({ turn, setIsRestarting }) {
   const [_, forceUpdate] = useReducer(() => true);

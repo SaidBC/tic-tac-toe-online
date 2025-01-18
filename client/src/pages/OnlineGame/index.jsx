@@ -6,12 +6,12 @@ import {
 } from "react-router-dom";
 import { socket } from "../../socket";
 import { useEffect, useMemo, useRef, useState } from "react";
-import connection from "../utils/connection";
+import connection from "../../utils/connection";
 import {
   onClearStorage,
   onRedirect,
   onSaveToStorage,
-} from "../utils/socketsListeners";
+} from "../../utils/eventHelper";
 
 function OnlineGame() {
   const { alertRef, setAlertMessage } = useOutletContext();

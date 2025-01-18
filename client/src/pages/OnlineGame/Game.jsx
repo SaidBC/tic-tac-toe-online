@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import BoardSection from "./BoardSection";
+import { useCallback, useEffect, useRef, useState } from "react";
+import BoardSection from "../../components/Game/BoardSection";
 import HeaderSection from "./HeaderSection";
-import ResultsSection from "./ResultsSection";
-import GameOverPopup from "./GameOverPopup";
+import ResultsSection from "../../components/Game/ResultsSection";
+import GameOverPopup from "../../components/GameOverPopup";
 import { socket } from "../../socket";
 import ResignPopup from "./ResignPopup";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 
 function Game({ initialData }) {
   const { alertRef, setAlertMessage } = useOutletContext();
@@ -30,6 +30,38 @@ function Game({ initialData }) {
       setGameResutls(data.results);
     });
   }, [socket]);
+  const { "*": roomId } = useParams();
+  const turnHandle = useCallback(function (e) {
+    if (e.target.tagName == "BUTTON" && currentPlayer === turn.current) {
+      const blockType = +e.target.getAttribute("data-block-type");
+      if (blockType === 0) {
+        const index = e.target.getAttribute("data-index");
+        const token = window.localStorage.getItem("player");
+        socket.emit("send-game", {
+          index,
+          turn: turn.current,
+          token,
+          roomId,
+        });
+      }
+    }
+  });
+  const navigate = useNavigate();
+  const nextRoundHandle = function () {
+    const player = window.localStorage.getItem("player");
+    const fn = function () {
+      setAlertMessage({
+        title: "request was sent",
+        content: "waiting for oppenent response",
+      });
+      alertRef.current.toast();
+    };
+    socket.emit("next-round", player, fn);
+  };
+  const quitHandle = function () {
+    onClearStorage();
+    navigate("../../");
+  };
 
   return (
     <>
@@ -39,17 +71,19 @@ function Game({ initialData }) {
           turn={turn}
           setIsResigning={setIsResigning}
         />
-        <BoardSection turn={turn} board={board} currentPlayer={currentPlayer} />
+        <BoardSection board={board} turnHandle={turnHandle} />
         <ResultsSection
+          turnHandle={turnHandle}
           gameResults={gameResults}
           currentPlayer={currentPlayer}
+          mode="online"
         />
 
         {currentPlayer && gameStatus.status === "gameover" && (
           <GameOverPopup
             winner={gameStatus.winner}
-            alertRef={alertRef}
-            setAlertMessage={setAlertMessage}
+            nextRoundHandle={nextRoundHandle}
+            quitHandle={quitHandle}
           />
         )}
         {currentPlayer && isResigning && (
