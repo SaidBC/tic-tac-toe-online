@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const checkGame = require("./checkGame");
+const checkGame = require("../utils/checkGame");
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
 
 const onSendGame = function (roomsQueue, roomId, io) {

@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const countdown = require("./countdown");
+const countdown = require("../utils/countdown");
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
 
 const { parse, stringify } = JSON;
