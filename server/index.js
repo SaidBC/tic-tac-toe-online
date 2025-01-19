@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const server = require("http").createServer(app);
@@ -9,6 +10,9 @@ const onSendGame = require("./events/onSendGame");
 const onResignGame = require("./events/onResignGame");
 const countdown = require("./utils/countdown");
 const onNextRound = require("./events/onNextRound");
+const connectDB = require("./configs/db");
+const WaitingRoom = require("./models/WaitingRoom");
+const Room = require("./models/Room");
 const { parse, stringify } = JSON;
 const PORT = 8000;
 const io = new Server(server, {
@@ -18,7 +22,6 @@ const io = new Server(server, {
 });
 
 app.use(cors());
-const waitingRooms = [];
 const initialGame = {
   board: [
     [0, 0, 0],
@@ -35,80 +38,46 @@ const initialGame = {
     o: 60,
   },
 };
-const initialRoom = {
-  currentGame: parse(stringify(initialGame)),
-  results: {
-    x: 0,
-    tie: 0,
-    o: 0,
-  },
-  games: [],
-};
-const roomsQueue = {
-  id: {
-    games: [],
-    currentGame: {
-      board: [],
-      turn: "x" || "o",
-      gameStatus: {
-        status: "pending",
-        winner: false,
-      },
-      timer: {
-        x: 60,
-        o: 60,
-      },
-    },
-    results: {
-      x: 0,
-      tie: 0,
-      o: 0,
-    },
-    players: ["p1-id", "p2-id"],
-  },
-};
+
 io.on("connection", async (socket) => {
   console.log("A USER CONNECTED", socket.id);
-  socket.on("join-room", (roomId) => {
+  socket.on("join-room", async (roomId) => {
     if (!roomId) {
-      if (!waitingRooms.length) {
+      const waitingRoom = await WaitingRoom.findOne({});
+
+      if (!waitingRoom) {
         roomId = randomUUID();
-        waitingRooms.push(roomId);
+        await WaitingRoom.create({ roomId });
         socket.join(roomId);
-        socket.on("disconnect", () => {
-          waitingRooms.splice(waitingRooms.indexOf(roomId), 1);
+        socket.on("disconnect", async () => {
+          await WaitingRoom.deleteOne({ roomId });
         });
       } else {
-        roomId = waitingRooms[0];
-        waitingRooms.splice(0, 1);
+        roomId = waitingRoom.roomId;
         socket.join(roomId);
         const players = Array.from(io.sockets.adapter.rooms.get(roomId));
-        roomsQueue[roomId] = {
-          ...parse(stringify(initialRoom)),
+        await WaitingRoom.deleteOne({ _id: waitingRoom._id });
+        await Room.create({
+          roomId,
           players,
-        };
+        });
         io.to(roomId).emit("save-to-storage", "roomId", roomId);
         const p1 = generateToken({ playerId: players[0], initialTurn: "x" });
         io.to(players[0]).emit("save-to-storage", "player", p1);
         const p2 = generateToken({ playerId: players[1], initialTurn: "o" });
         io.to(players[1]).emit("save-to-storage", "player", p2);
         io.to(roomId).emit("redirect", `./${roomId}`);
-        const timerId = setInterval(
-          () => countdown(roomsQueue, roomId, io, timerId),
-          1000
-        );
+        const timerId = setInterval(() => countdown(roomId, io, timerId), 1000);
       }
     } else {
-      if (roomsQueue[roomId]) {
+      const room = await Room.findOne({ roomId });
+      if (room) {
         socket.join(roomId);
-        io.in(roomId).emit("initial-recieve-game", roomsQueue[roomId]);
+        io.in(roomId).emit("initial-recieve-game", room);
         socket.emit("redirect", `./${roomId}`, "/play/online");
-        socket.on("resign-game", onResignGame(roomsQueue, roomId, io));
-        socket.on("send-game", onSendGame(roomsQueue, roomId, io));
-        socket.on(
-          "next-round",
-          onNextRound(roomsQueue, roomId, io, socket, initialGame)
-        );
+        socket.on("resign-game", onResignGame(roomId, io));
+        socket.on("send-game", onSendGame(roomId, io));
+        socket.on("next-round", onNextRound(roomId, io, socket, initialGame));
       } else {
         socket.emit("redirect", `../`);
         socket.emit("clear-storage");
@@ -117,6 +86,13 @@ io.on("connection", async (socket) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log("THE APP IS RUNNING AT PORT", PORT);
-});
+connectDB()
+  .then(() => {
+    server.listen(PORT, () => {
+      console.log("THE APP IS RUNNING AT PORT", PORT);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect to MongoDB:", err);
+    process.exit(1);
+  });

@@ -6,6 +6,7 @@ import GameOverPopup from "../../components/GameOverPopup";
 import { socket } from "../../socket";
 import ResignPopup from "./ResignPopup";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { onClearStorage } from "../../utils/eventHelper";
 
 function Game({ initialData }) {
   const { alertRef, setAlertMessage } = useOutletContext();
